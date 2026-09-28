@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0E7C86">
+<title>Mi Caja</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F6F8;--card:#FFFFFF;--ink:#1B2A41;--mute:#6B7788;--line:#E1E6EC;
+  --brand:#0E7C86;--on-brand:#FFFFFF;--accent:#F2B134;--danger:#C8443A;--ok:#2E8B57;--soft:#E7F3F4;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10171F;--card:#18222D;--ink:#E8EEF4;--mute:#93A1B2;--line:#263341;--brand:#3CB4BE;--on-brand:#08262A;--soft:#153039;--danger:#E8776E;--ok:#5CC08A}
+}
+:root[data-theme="dark"]{--bg:#10171F;--card:#18222D;--ink:#E8EEF4;--mute:#93A1B2;--line:#263341;--brand:#3CB4BE;--on-brand:#08262A;--soft:#153039;--danger:#E8776E;--ok:#5CC08A}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+h1,h2,h3{font-family:'Bricolage Grotesque','Figtree',system-ui,sans-serif;margin:0;letter-spacing:-.01em}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+small{color:var(--mute);font-size:13px}
+.app{max-width:640px;margin:0 auto;min-height:100vh}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;gap:10px;padding:14px 16px 10px}
+header.top h1{font-size:22px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--brand);color:var(--on-brand);display:grid;place-items:center;font-weight:600;border:0}
+.back{border:0;background:var(--soft);color:var(--brand);width:38px;height:38px;border-radius:50%;font-size:20px}
+main{padding:4px 16px 110px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.ledger{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden;margin-bottom:12px}
+.ledger>div{padding:14px;border-bottom:1px solid var(--line)}
+.ledger>div:nth-child(odd){border-right:1px solid var(--line)}
+.ledger>div:nth-last-child(-n+2){border-bottom:0}
+.ledger b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:22px;margin-top:2px}
+.pos{color:var(--ok)}.neg{color:var(--danger)}
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left}
+.row:last-child{border-bottom:0}
+.row .grow{flex:1;min-width:0}
+.row .grow b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.amt{font-weight:600;white-space:nowrap}
+.btn{border:0;background:var(--brand);color:var(--on-brand);padding:13px 18px;border-radius:12px;font-weight:600;min-height:46px}
+.btn.ghost{background:var(--soft);color:var(--brand)}
+.btn.danger{background:transparent;color:var(--danger);border:1px solid var(--danger)}
+.btn.block{width:100%}
+.bar{display:flex;gap:8px;margin-bottom:12px}
+.bar input{flex:1}
+input,select,textarea{width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;min-height:46px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
+.field .hint{font-size:13px;color:var(--mute);margin-top:4px}
+.err{color:var(--danger);font-size:14px;margin:6px 0;min-height:18px}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:8px 14px;white-space:nowrap}
+.chip.on{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+.badge{font-size:12px;font-weight:600;border-radius:99px;padding:3px 9px;background:var(--soft);color:var(--brand);white-space:nowrap}
+.badge.warn{background:#FCEFD0;color:#8A5D00}
+.badge.bad{background:#F8DAD7;color:#9C2F26}
+.badge.ok{background:#D9F0E2;color:#1F6B41}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .badge.warn{background:#4A3A12;color:#F5C862}:root:not([data-theme="light"]) .badge.bad{background:#4A1F1B;color:#F0A099}:root:not([data-theme="light"]) .badge.ok{background:#173A28;color:#8ED6AC}}
+.empty{text-align:center;padding:28px 12px;color:var(--mute)}
+.empty b{display:block;color:var(--ink);margin-bottom:4px;font-family:'Bricolage Grotesque',sans-serif;font-size:18px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+nav.tabs .in{display:flex;width:100%;max-width:640px}
+nav.tabs button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;color:var(--mute);font-size:12px;font-weight:500;border-radius:10px}
+nav.tabs button.on{color:var(--brand);font-weight:600}
+nav.tabs svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.overlay{position:fixed;inset:0;background:rgba(10,20,30,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.sheet{animation:none}}
+.sheet h2{font-size:20px;margin-bottom:14px}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:20px;line-height:1}
+.stepper span{min-width:22px;text-align:center;font-weight:600}
+.total{display:flex;justify-content:space-between;font-size:20px;padding:12px 0;font-family:'Bricolage Grotesque',sans-serif}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;z-index:30;font-size:14px}
+.auth{max-width:420px;margin:0 auto;padding:40px 20px}
+.auth h1{font-size:34px;margin-bottom:6px}
+.auth p{color:var(--mute);margin:0 0 22px}
+.seg{display:flex;background:var(--soft);border-radius:12px;padding:4px;margin-bottom:18px}
+.seg button{flex:1;border:0;background:none;padding:10px;border-radius:9px;font-weight:600;color:var(--mute)}
+.seg button.on{background:var(--card);color:var(--brand)}
+.menu .row{padding:16px 0}
+h3.sec{font-size:16px;margin:18px 0 8px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+'use strict';
+/* ---------- Almacenamiento (protegido) ---------- */
+const mem = {};
+const S = {
+  get(k){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : (mem[k] ?? null); }catch(e){ return mem[k] ?? null; } },
+  set(k,v){ mem[k] = v; try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+  del(k){ delete mem[k]; try{ localStorage.removeItem(k); }catch(e){} }
+};
+const uid = () => Math.random().toString(36).slice(2,9) + Date.now().toString(36);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $ = s => document.querySelector(s);
+
+/* ---------- Seguridad: contraseña con PBKDF2 + sal ---------- */
+const enc = new TextEncoder();
+const toHex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+async function hashPw(pw, salt){
+  const key = await crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({name:'PBKDF2', salt:enc.encode(salt), iterations:120000, hash:'SHA-256'}, key, 256);
+  return toHex(bits);
+}
+const newSalt = () => toHex(crypto.getRandomValues(new Uint8Array(16)));
+
+/* ---------- Estado ---------- */
+let user = null, db = null, view = 'home', authMode = 'login';
+const q = {products:'', customers:''};
+let orderFilter = 'todos';
+let fails = 0, lockUntil = 0;
+const emptyDb = () => ({products:[], customers:[], sales:[], orders:[], expenses:[]});
+const save = () => { if(user) S.set('mc_data_' + user.id, db); };
+const users = () => S.get('mc_users') || [];
+const money = n => (user?.symbol || '$') + Number(n || 0).toLocaleString('es', {minimumFractionDigits:2, maximumFractionDigits:2});
+const fdate = d => new Date(d).toLocaleDateString('es', {day:'numeric', month:'short'});
+const ftime = d => new Date(d).toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'});
+const sameDay = (a,b) => new Date(a).toDateString() === new Date(b).toDateString();
+const sameMonth = (a,b) => { a = new Date(a); b = new Date(b); return a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear(); };
+const num = v => { const n = parseFloat(String(v).replace(',', '.')); return isNaN(n) ? 0 : n; };
+
+/* ---------- Iconos ---------- */
+const ic = {
+  home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+  cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/>',
+  box:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 010 7M18 14.8c2 .6 3.2 2.3 3.5 5.2"/>',
+  more:'<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>'
+};
+const svg = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${ic[k]}</svg>`;
+
+/* ---------- Utilidades de interfaz ---------- */
+function toast(msg){
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role','status'); t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2400);
+}
+function openSheet(title, body, saveLabel, onSave, opts = {}){
+  const ov = document.createElement('div'); ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}"><h2>${esc(title)}</h2>
+    <form novalidate>${body}<div class="err" role="alert"></div>
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <button type="button" class="btn ghost" data-close>Cancelar</button>
+      ${saveLabel ? `<button type="submit" class="btn" style="flex:1">${esc(saveLabel)}</button>` : ''}
+    </div>
+    ${opts.danger ? `<button type="button" class="btn danger block" style="margin-top:10px" data-danger>${esc(opts.danger.label)}</button>` : ''}
+    </form></div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  const form = ov.querySelector('form');
+  const setErr = m => { ov.querySelector('.err').textContent = m || ''; return true; };
+  ov.addEventListener('click', e => { if(e.target === ov || e.target.closest('[data-close]')) close(); });
+  if(opts.danger) ov.querySelector('[data-danger]').onclick = () => { close(); opts.danger.fn(); };
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const r = onSave ? onSave(new FormData(form), setErr) : true;
+    if(r !== false) close();
+  });
+  if(opts.onMount) opts.onMount(ov, setErr);
+  const first = ov.querySelector('input,select,textarea'); if(first && !opts.noFocus) first.focus();
+  return close;
+}
+function ask(msg, fn, label = 'Sí, continuar'){
+  openSheet('¿Confirmas?', `<p style="margin:0 0 14px">${esc(msg)}</p>`, label, () => { fn(); });
+}
+const opt = (list, sel, blank) => (blank ? `<option value="">${esc(blank)}</option>` : '') +
+  list.map(o => `<option value="${esc(o.id ?? o)}" ${(o.id ?? o) === sel ? 'selected' : ''}>${esc(o.name ?? o)}</option>`).join('');
+
+/* ---------- Autenticación ---------- */
+function renderAuth(){
+  const reg = authMode === 'register';
+  $('#root').innerHTML = `<div class="auth">
+    <h1>Mi Caja</h1><p>Ventas, inventario, clientes y cuentas de tu tienda en un solo lugar.</p>
+    <div class="seg" role="tablist"><button data-auth="login" class="${!reg ? 'on' : ''}">Entrar</button><button data-auth="register" class="${reg ? 'on' : ''}">Crear cuenta</button></div>
+    <form id="authForm" novalidate>
+      ${reg ? `<div class="field"><label for="a_name">Tu nombre</label><input id="a_name" name="name" autocomplete="name"></div>
+      <div class="field"><label for="a_biz">Nombre de tu tienda</label><input id="a_biz" name="business"></div>` : ''}
+      <div class="field"><label for="a_mail">Correo</label><input id="a_mail" name="email" type="email" autocomplete="email" inputmode="email"></div>
+      <div class="field"><label for="a_pw">Contraseña</label><input id="a_pw" name="pw" type="password" autocomplete="${reg ? 'new-password' : 'current-password'}">
+      ${reg ? '<div class="hint">Mínimo 8 caracteres.</div>' : ''}</div>
+      <div class="err" id="authErr" role="alert"></div>
+      <button class="btn block" type="submit">${reg ? 'Crear mi cuenta' : 'Entrar'}</button>
+    </form>
+    <p style="margin-top:22px;font-size:13px">Versión de prueba: los datos se guardan solo en este dispositivo.</p></div>`;
+  document.querySelectorAll('[data-auth]').forEach(b => b.onclick = () => { authMode = b.dataset.auth; renderAuth(); });
+  $('#authForm').onsubmit = async e => {
+    e.preventDefault();
+    const f = new FormData(e.target), err = m => { $('#authErr').textContent = m; };
+    const email = String(f.get('email') || '').trim().toLowerCase(), pw = String(f.get('pw') || '');
+    if(!/^\S+@\S+\.\S+$/.test(email)) return err('Escribe un correo válido.');
+    try{
+      if(reg){
+        const name = String(f.get('name') || '').trim(), business = String(f.get('business') || '').trim();
+        if(!name || !business) return err('Escribe tu nombre y el de tu tienda.');
+        if(pw.length < 8) return err('La contraseña debe tener al menos 8 caracteres.');
+        const list = users();
+        if(list.some(u => u.email === email)) return err('Ese correo ya tiene una cuenta. Prueba entrar.');
+        const salt = newSalt();
+        const u = {id:uid(), email, name, business, symbol:'$', salt, hash: await hashPw(pw, salt)};
+        list.push(u); S.set('mc_users', list); S.set('mc_data_' + u.id, emptyDb());
+        startSession(u);
+      } else {
+        if(Date.now() < lockUntil) return err('Demasiados intentos. Espera unos segundos.');
+        const u = users().find(x => x.email === email);
+        if(!u || (await hashPw(pw, u.salt)) !== u.hash){
+          if(++fails >= 5){ lockUntil = Date.now() + 30000; fails = 0; }
+          return err('Correo o contraseña incorrectos.');
+        }
+        fails = 0; startSession(u);
+      }
+    }catch(ex){ err('Tu navegador no permite crear cuentas seguras aquí. Abre la página en Chrome.'); }
+  };
+}
+function startSession(u){
+  user = u; S.set('mc_session', u.id);
+  db = Object.assign(emptyDb(), S.get('mc_data_' + u.id) || {});
+  view = 'home'; render();
+}
+function logout(){ user = null; db = null; S.del('mc_session'); authMode = 'login'; render(); }
+
+/* ---------- Estructura de la app ---------- */
+const titles = {home:'Resumen', sales:'Ventas', products:'Inventario', customers:'Clientes', more:'Más', orders:'Pedidos', accounts:'Cuentas', profile:'Mi perfil'};
+const tabOf = v => ['home','sales','products','customers'].includes(v) ? v : 'more';
+function render(){
+  if(!user) return renderAuth();
+  const sub = ['orders','accounts','profile'].includes(view);
+  const initial = (user.name || '?').trim().charAt(0).toUpperCase();
+  const tabs = [['home','Resumen','home'],['sales','Ventas','cart'],['products','Inventario','box'],['customers','Clientes','users'],['more','Más','more']];
+  $('#root').innerHTML = `<div class="app">
+    <header class="top">${sub ? '<button class="back" data-go="more" aria-label="Volver">‹</button>' : ''}
+      <h1>${view === 'home' ? esc(user.business) : titles[view]}</h1>
+      <button class="avatar" data-go="profile" aria-label="Mi perfil">${esc(initial)}</button></header>
+    <main id="main">${views[view]()}</main>
+    <nav class="tabs" aria-label="Secciones"><div class="in">${tabs.map(t => `<button data-go="${t[0]}" class="${tabOf(view) === t[0] ? 'on' : ''}" ${tabOf(view) === t[0] ? 'aria-current="page"' : ''}>${svg(t[2])}${t[1]}</button>`).join('')}</div></nav></div>`;
+  window.scrollTo(0, 0);
+}
+const go = v => { view = v; render(); };
+const fab = (act, label) => `<button class="btn fab" data-act="${act}">+ ${label}</button>`;
+const empty = (t, d) => `<div class="empty"><b>${t}</b>${d}</div>`;
+
+/* ---------- Vistas ---------- */
+const views = {
+  home(){
+    const now = new Date();
+    const salesDay = db.sales.filter(s => sameDay(s.date, now)).reduce((a,s) => a + s.total, 0);
+    const salesMonth = db.sales.filter(s => sameMonth(s.date, now)).reduce((a,s) => a + s.total, 0);
+    const spentMonth = db.expenses.filter(e => sameMonth(e.date, now)).reduce((a,e) => a + e.amount, 0);
+    const low = db.products.filter(p => p.stock <= p.min);
+    const pend = db.orders.filter(o => o.status !== 'entregado');
+    const bal = salesMonth - spentMonth;
+    let h = '';
+    if(!db.products.length && !db.sales.length){
+      h += `<div class="card"><h3>Empieza por aquí</h3><p style="color:var(--mute);margin:6px 0 12px">Agrega tus productos para poder vender, o carga datos de ejemplo para explorar la app.</p>
+        <div style="display:flex;gap:8px"><button class="btn" data-act="addProduct">Agregar producto</button><button class="btn ghost" data-act="seed">Cargar ejemplo</button></div></div>`;
+    }
+    h += `<div class="ledger">
+      <div><small>Ventas de hoy</small><b>${money(salesDay)}</b></div>
+      <div><small>Ventas del mes</small><b>${money(salesMonth)}</b></div>
+      <div><small>Gastos del mes</small><b>${money(spentMonth)}</b></div>
+      <div><small>Balance del mes</small><b class="${bal >= 0 ? 'pos' : 'neg'}">${money(bal)}</b></div></div>`;
+    h += `<div class="card"><h3>Atención</h3>
+      ${low.length ? low.slice(0,5).map(p => `<div class="row" style="cursor:default"><div class="grow"><b>${esc(p.name)}</b><small>Quedan ${p.stock}</small></div><span class="badge ${p.stock <= 0 ? 'bad' : 'warn'}">${p.stock <= 0 ? 'Agotado' : 'Stock bajo'}</span></div>`).join('') : '<p style="color:var(--mute);margin:8px 0 0">Todo el inventario está en orden.</p>'}
+      ${pend.length ? `<button class="row" data-go="orders"><div class="grow"><b>${pend.length} pedido${pend.length > 1 ? 's' : ''} sin entregar</b><small>Toca para revisarlos</small></div><span>›</span></button>` : ''}</div>`;
+    const last = db.sales.slice(0,5);
+    h += `<div class="card"><h3>Últimas ventas</h3>${last.length ? last.map(saleRow).join('') : '<p style="color:var(--mute);margin:8px 0 0">Aún no hay ventas registradas.</p>'}</div>`;
+    return h + fab('newSale', 'Nueva venta');
+  },
+  sales(){
+    return `<div class="card">${db.sales.length ? db.sales.map(saleRow).join('') : empty('Sin ventas todavía', 'Registra la primera con el botón de abajo.')}</div>` + fab('newSale', 'Nueva venta');
+  },
+  products(){
+    return `<div class="bar"><input id="qp" type="search" placeholder="Buscar producto" value="${esc(q.products)}" aria-label="Buscar producto"></div>
+      <div class="card" id="list">${productList()}</div>` + fab('addProduct', 'Producto');
+  },
+  customers(){
+    return `<div class="bar"><input id="qc" type="search" placeholder="Buscar cliente" value="${esc(q.customers)}" aria-label="Buscar cliente"></div>
+      <div class="card" id="list">${customerList()}</div>` + fab('addCustomer', 'Cliente');
+  },
+  more(){
+    const item = (v, t, d) => `<button class="row" data-go="${v}"><div class="grow"><b>${t}</b><small>${d}</small></div><span>›</span></button>`;
+    return `<div class="card menu">${item('orders','Pedidos','Encargos de tus clientes y su estado')}${item('accounts','Cuentas','Ingresos, gastos y balance')}${item('profile','Mi perfil','Datos personales y seguridad')}</div>
+      <button class="btn ghost block" data-act="logout">Cerrar sesión</button>`;
+  },
+  orders(){
+    const st = ['todos','pendiente','listo','entregado'];
+    const list = db.orders.filter(o => orderFilter === 'todos' || o.status === orderFilter);
+    return `<div class="chips">${st.map(s => `<button class="chip ${orderFilter === s ? 'on' : ''}" data-act="filterOrders" data-id="${s}">${s[0].toUpperCase() + s.slice(1)}</button>`).join('')}</div>
+      <div class="card">${list.length ? list.map(o => {
+        const c = db.customers.find(x => x.id === o.customerId);
+        const cls = {pendiente:'warn', listo:'', entregado:'ok'}[o.status];
+        return `<button class="row" data-act="editOrder" data-id="${o.id}"><div class="grow"><b>${esc(o.desc)}</b><small>${esc(c ? c.name : 'Sin cliente')}${o.due ? ' · para el ' + fdate(o.due) : ''}</small></div><div style="text-align:right"><div class="amt">${money(o.total)}</div><span class="badge ${cls}">${o.status}</span></div></button>`;
+      }).join('') : empty('No hay pedidos', 'Anota los encargos de tus clientes para no olvidar ninguno.')}</div>` + fab('addOrder', 'Pedido');
+  },
+  accounts(){
+    const now = new Date();
+    const inc = db.sales.filter(s => sameMonth(s.date, now)).reduce((a,s) => a + s.total, 0);
+    const exp = db.expenses.filter(e => sameMonth(e.date, now)).reduce((a,e) => a + e.amount, 0);
+    return `<div class="ledger"><div><small>Ingresos del mes</small><b class="pos">${money(inc)}</b></div><div><small>Gastos del mes</small><b class="neg">${money(exp)}</b></div>
+      <div style="grid-column:1/-1;border-right:0"><small>Balance</small><b class="${inc - exp >= 0 ? 'pos' : 'neg'}">${money(inc - exp)}</b></div></div>
+      <h3 class="sec">Gastos registrados</h3>
+      <div class="card">${db.expenses.length ? db.expenses.map(e => `<button class="row" data-act="editExpense" data-id="${e.id}"><div class="grow"><b>${esc(e.concept)}</b><small>${esc(e.cat)} · ${fdate(e.date)}</small></div><div class="amt neg">−${money(e.amount)}</div></button>`).join('') : empty('Sin gastos', 'Registra compras de mercancía, servicios y otros gastos.')}</div>` + fab('addExpense', 'Gasto');
+  },
+  profile(){
+    return `<div class="card"><form id="profForm" novalidate>
+      <div class="field"><label for="p_name">Nombre</label><input id="p_name" name="name" value="${esc(user.name)}"></div>
+      <div class="field"><label for="p_biz">Nombre de la tienda</label><input id="p_biz" name="business" value="${esc(user.business)}"></div>
+      <div class="field"><label for="p_sym">Símbolo de moneda</label><input id="p_sym" name="symbol" maxlength="4" value="${esc(user.symbol)}"><div class="hint">Por ejemplo: $, S/, Bs, €</div></div>
+      <div class="field"><label>Correo</label><input value="${esc(user.email)}" disabled></div>
+      <div class="err" id="profMsg" role="status"></div>
+      <button class="btn block" type="submit">Guardar cambios</button></form></div>
+      <div class="card"><h3>Cambiar contraseña</h3><form id="pwForm" novalidate style="margin-top:10px">
+      <div class="field"><label for="pw_old">Contraseña actual</label><input id="pw_old" name="old" type="password" autocomplete="current-password"></div>
+      <div class="field"><label for="pw_new">Nueva contraseña</label><input id="pw_new" name="nw" type="password" autocomplete="new-password"></div>
+      <div class="err" id="pwMsg" role="status"></div>
+      <button class="btn ghost block" type="submit">Actualizar contraseña</button></form></div>
+      <button class="btn danger block" data-act="wipe">Borrar todos mis datos</button>`;
+  }
+};
+
+/* ---------- Componentes de lista ---------- */
+function saleRow(s){
+  const c = db.customers.find(x => x.id === s.customerId);
+  return `<button class="row" data-act="viewSale" data-id="${s.id}"><div class="grow"><b>${esc(c ? c.name : 'Cliente general')}</b><small>${s.items.reduce((a,i) => a + i.qty, 0)} artículos · ${esc(s.method)} · ${fdate(s.date)} ${ftime(s.date)}</small></div><div class="amt">${money(s.total)}</div></button>`;
+}
+function productList(){
+  const t = q.products.toLowerCase();
+  const l = db.products.filter(p => p.name.toLowerCase().includes(t));
+  if(!db.products.length) return empty('Tu inventario está vacío', 'Agrega tus productos con el botón de abajo.');
+  if(!l.length) return empty('Sin resultados', 'Prueba con otro nombre.');
+  return l.map(p => `<button class="row" data-act="editProduct" data-id="${p.id}"><div class="grow"><b>${esc(p.name)}</b><small>Costo ${money(p.cost)} · Precio ${money(p.price)}</small></div>
+    <div style="text-align:right"><div class="amt">${p.stock}</div><span class="badge ${p.stock <= 0 ? 'bad' : p.stock <= p.min ? 'warn' : ''}">${p.stock <= 0 ? 'Agotado' : p.stock <= p.min ? 'Bajo' : 'En stock'}</span></div></button>`).join('');
+}
+function customerList(){
+  const t = q.customers.toLowerCase();
+  const l = db.customers.filter(c => c.name.toLowerCase().includes(t));
+  if(!db.customers.length) return empty('Aún no tienes clientes', 'Guarda sus datos para llevar el historial de compras.');
+  if(!l.length) return empty('Sin resultados', 'Prueba con otro nombre.');
+  return l.map(c => {
+    const tot = db.sales.filter(s => s.customerId === c.id).reduce((a,s) => a + s.total, 0);
+    return `<button class="row" data-act="editCustomer" data-id="${c.id}"><div class="grow"><b>${esc(c.name)}</b><small>${esc(c.phone || 'Sin teléfono')}</small></div><div class="amt">${money(tot)}</div></button>`;
+  }).join('');
+}
+
+/* ---------- Acciones ---------- */
+const actions = {
+  logout, 
+  filterOrders(id){ orderFilter = id; render(); },
+  seed(){
+    const P = [['Arroz 1 kg',1.2,1.8,40,10],['Aceite 1 L',2.5,3.6,24,8],['Azúcar 1 kg',1,1.5,30,10],['Leche 1 L',0.9,1.4,6,10],['Galletas',0.4,0.8,50,15],['Jabón de baño',0.6,1.1,18,6]];
+    P.forEach(p => db.products.push({id:uid(), name:p[0], cost:p[1], price:p[2], stock:p[3], min:p[4]}));
+    [['María Pérez','555 0101'],['Carlos Ruiz','555 0102'],['Tienda La Esquina','555 0103']].forEach(c => db.customers.push({id:uid(), name:c[0], phone:c[1], notes:''}));
+    save(); toast('Datos de ejemplo cargados'); render();
+  },
+  addProduct(){ productSheet(); },
+  editProduct(id){ productSheet(db.products.find(p => p.id === id)); },
+  addCustomer(){ customerSheet(); },
+  editCustomer(id){ customerSheet(db.customers.find(c => c.id === id)); },
+  newSale, viewSale,
+  addOrder(){ orderSheet(); },
+  editOrder(id){ orderSheet(db.orders.find(o => o.id === id)); },
+  addExpense(){ expenseSheet(); },
+  editExpense(id){ expenseSheet(db.expenses.find(e => e.id === id)); },
+  wipe(){ ask('Se borrarán productos, clientes, ventas, pedidos y gastos. No se puede deshacer.', () => { db = emptyDb(); save(); toast('Datos borrados'); go('home'); }, 'Borrar todo'); }
+};
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]'); if(g && !e.target.closest('.overlay')){ go(g.dataset.go); return; }
+  const a = e.target.closest('[data-act]'); if(a && actions[a.dataset.act]) actions[a.dataset.act](a.dataset.id, a);
+});
+document.addEventListener('input', e => {
+  if(e.target.id === 'qp'){ q.products = e.target.value; $('#list').innerHTML = productList(); }
+  if(e.target.id === 'qc'){ q.customers = e.target.value; $('#list').innerHTML = customerList(); }
+});
+document.addEventListener('submit', async e => {
+  if(e.target.id === 'profForm'){
+    e.preventDefault(); const f = new FormData(e.target), m = $('#profMsg');
+    const name = String(f.get('name')).trim(), biz = String(f.get('business')).trim();
+    if(!name || !biz){ m.className = 'err'; m.textContent = 'El nombre y la tienda no pueden estar vacíos.'; return; }
+    user.name = name; user.business = biz; user.symbol = String(f.get('symbol')).trim() || '$';
+    const list = users().map(u => u.id === user.id ? user : u); S.set('mc_users', list);
+    m.className = 'err'; m.style.color = 'var(--ok)'; m.textContent = 'Cambios guardados.';
+  }
+  if(e.target.id === 'pwForm'){
+    e.preventDefault(); const f = new FormData(e.target), m = $('#pwMsg'); m.style.color = '';
+    try{
+      if((await hashPw(String(f.get('old')), user.salt)) !== user.hash){ m.textContent = 'La contraseña actual no es correcta.'; return; }
+      const nw = String(f.get('nw')); if(nw.length < 8){ m.textContent = 'La nueva contraseña debe tener al menos 8 caracteres.'; return; }
+      user.salt = newSalt(); user.hash = await hashPw(nw, user.salt);
+      S.set('mc_users', users().map(u => u.id === user.id ? user : u));
+      e.target.reset(); m.style.color = 'var(--ok)'; m.textContent = 'Contraseña actualizada.';
+    }catch(ex){ m.textContent = 'No se pudo actualizar. Intenta de nuevo.'; }
+  }
+});
+
+/* ---------- Formularios ---------- */
+function productSheet(p){
+  const edit = !!p; p = p || {name:'', cost:'', price:'', stock:'', min:5};
+  openSheet(edit ? 'Editar producto' : 'Nuevo producto', `
+    <div class="field"><label>Nombre</label><input name="name" value="${esc(p.name)}"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div class="field"><label>Costo</label><input name="cost" inputmode="decimal" value="${esc(p.cost)}"></div>
+    <div class="field"><label>Precio de venta</label><input name="price" inputmode="decimal" value="${esc(p.price)}"></div>
+    <div class="field"><label>Cantidad en stock</label><input name="stock" inputmode="numeric" value="${esc(p.stock)}"></div>
+    <div class="field"><label>Avisar si queda</label><input name="min" inputmode="numeric" value="${esc(p.min)}"></div></div>`,
+    'Guardar', (f, err) => {
+      const name = String(f.get('name')).trim(); if(!name) return err('Escribe el nombre del producto.') && false;
+      if(num(f.get('price')) <= 0) return err('El precio debe ser mayor que cero.') && false;
+      const d = {name, cost:num(f.get('cost')), price:num(f.get('price')), stock:Math.round(num(f.get('stock'))), min:Math.round(num(f.get('min')))};
+      if(edit) Object.assign(p, d); else db.products.unshift(Object.assign({id:uid()}, d));
+      save(); toast('Producto guardado'); render();
+    }, edit ? {danger:{label:'Eliminar producto', fn:() => ask('Se eliminará "' + p.name + '" del inventario.', () => { db.products = db.products.filter(x => x.id !== p.id); save(); render(); }, 'Eliminar')}} : {});
+}
+function customerSheet(c){
+  const edit = !!c; c = c || {name:'', phone:'', notes:''};
+  openSheet(edit ? 'Editar cliente' : 'Nuevo cliente', `
+    <div class="field"><label>Nombre</label><input name="name" value="${esc(c.name)}"></div>
+    <div class="field"><label>Teléfono</label><input name="phone" type="tel" inputmode="tel" value="${esc(c.phone)}"></div>
+    <div class="field"><label>Notas</label><textarea name="notes" rows="2">${esc(c.notes)}</textarea></div>`,
+    'Guardar', (f, err) => {
+      const name = String(f.get('name')).trim(); if(!name) return err('Escribe el nombre del cliente.') && false;
+      const d = {name, phone:String(f.get('phone')).trim(), notes:String(f.get('notes')).trim()};
+      if(edit) Object.assign(c, d); else db.customers.unshift(Object.assign({id:uid()}, d));
+      save(); toast('Cliente guardado'); render();
+    }, edit ? {danger:{label:'Eliminar cliente', fn:() => ask('Se eliminará a "' + c.name + '". Sus ventas se conservan.', () => { db.customers = db.customers.filter(x => x.id !== c.id); save(); render(); }, 'Eliminar')}} : {});
+}
+function orderSheet(o){
+  const edit = !!o; o = o || {desc:'', customerId:'', total:'', due:'', status:'pendiente'};
+  openSheet(edit ? 'Editar pedido' : 'Nuevo pedido', `
+    <div class="field"><label>¿Qué pidió?</label><input name="desc" value="${esc(o.desc)}"></div>
+    <div class="field"><label>Cliente</label><select name="customer">${opt(db.customers, o.customerId, 'Sin cliente')}</select></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div class="field"><label>Total</label><input name="total" inputmode="decimal" value="${esc(o.total)}"></div>
+    <div class="field"><label>Fecha de entrega</label><input name="due" type="date" value="${esc(o.due)}"></div></div>
+    <div class="field"><label>Estado</label><select name="status">${opt(['pendiente','listo','entregado'], o.status)}</select></div>`,
+    'Guardar', (f, err) => {
+      const desc = String(f.get('desc')).trim(); if(!desc) return err('Describe el pedido.') && false;
+      const d = {desc, customerId:String(f.get('customer')), total:num(f.get('total')), due:String(f.get('due')), status:String(f.get('status'))};
+      if(edit) Object.assign(o, d); else db.orders.unshift(Object.assign({id:uid()}, d));
+      save(); toast('Pedido guardado'); render();
+    }, edit ? {danger:{label:'Eliminar pedido', fn:() => { db.orders = db.orders.filter(x => x.id !== o.id); save(); render(); }}} : {});
+}
+function expenseSheet(x){
+  const edit = !!x; x = x || {concept:'', amount:'', cat:'Mercancía', date:new Date().toISOString().slice(0,10)};
+  openSheet(edit ? 'Editar gasto' : 'Nuevo gasto', `
+    <div class="field"><label>Concepto</label><input name="concept" value="${esc(x.concept)}"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div class="field"><label>Monto</label><input name="amount" inputmode="decimal" value="${esc(x.amount)}"></div>
+    <div class="field"><label>Fecha</label><input name="date" type="date" value="${esc(String(x.date).slice(0,10))}"></div></div>
+    <div class="field"><label>Categoría</label><select name="cat">${opt(['Mercancía','Servicios','Sueldos','Alquiler','Transporte','Otros'], x.cat)}</select></div>`,
+    'Guardar', (f, err) => {
+      const concept = String(f.get('concept')).trim(); if(!concept) return err('Escribe el concepto del gasto.') && false;
+      if(num(f.get('amount')) <= 0) return err('El monto debe ser mayor que cero.') && false;
+      const d = {concept, amount:num(f.get('amount')), cat:String(f.get('cat')), date:String(f.get('date')) || new Date().toISOString()};
+      if(edit) Object.assign(x, d); else db.expenses.unshift(Object.assign({id:uid()}, d));
+      db.expenses.sort((a,b) => new Date(b.date) - new Date(a.date));
+      save(); toast('Gasto guardado'); render();
+    }, edit ? {danger:{label:'Eliminar gasto', fn:() => { db.expenses = db.expenses.filter(e => e.id !== x.id); save(); render(); }}} : {});
+}
+
+/* ---------- Venta ---------- */
+function newSale(){
+  if(!db.products.length){ toast('Primero agrega productos'); return go('products'); }
+  const cart = {};
+  const total = () => db.products.reduce((a,p) => a + (cart[p.id] || 0) * p.price, 0);
+  openSheet('Nueva venta', `
+    <div class="field"><label>Cliente</label><select name="customer">${opt(db.customers, '', 'Cliente general')}</select></div>
+    <div class="field"><label>Método de pago</label><select name="method">${opt(['Efectivo','Tarjeta','Transferencia','Fiado'], 'Efectivo')}</select></div>
+    ${db.products.map(p => `<div class="row" style="cursor:default"><div class="grow"><b>${esc(p.name)}</b><small>${money(p.price)} · ${p.stock} disponibles</small></div>
+      <div class="stepper"><button type="button" data-d="-1" data-p="${p.id}" aria-label="Quitar uno">−</button><span id="q_${p.id}">0</span><button type="button" data-d="1" data-p="${p.id}" aria-label="Agregar uno">+</button></div></div>`).join('')}
+    <div class="total"><span>Total</span><b id="tot">${money(0)}</b></div>`,
+    'Cobrar', (f, err) => {
+      const items = db.products.filter(p => cart[p.id] > 0).map(p => ({id:p.id, name:p.name, qty:cart[p.id], price:p.price, cost:p.cost}));
+      if(!items.length) return err('Agrega al menos un producto.') && false;
+      items.forEach(i => { db.products.find(p => p.id === i.id).stock -= i.qty; });
+      db.sales.unshift({id:uid(), date:new Date().toISOString(), customerId:String(f.get('customer')), method:String(f.get('method')), items, total:items.reduce((a,i) => a + i.qty * i.price, 0)});
+      save(); toast('Venta registrada'); render();
+    }, {noFocus:true, onMount(ov, setErr){
+      ov.addEventListener('click', e => {
+        const b = e.target.closest('[data-d]'); if(!b) return;
+        const p = db.products.find(x => x.id === b.dataset.p), n = (cart[p.id] || 0) + Number(b.dataset.d);
+        if(n < 0) return;
+        if(n > p.stock){ setErr('Solo quedan ' + p.stock + ' de ' + p.name + '.'); return; }
+        setErr(''); cart[p.id] = n; ov.querySelector('#q_' + p.id).textContent = n; ov.querySelector('#tot').textContent = money(total());
+      });
+    }});
+}
+function viewSale(id){
+  const s = db.sales.find(x => x.id === id); if(!s) return;
+  const c = db.customers.find(x => x.id === s.customerId);
+  openSheet('Detalle de venta', `<p style="margin:0 0 8px"><b>${esc(c ? c.name : 'Cliente general')}</b><br><small>${fdate(s.date)} ${ftime(s.date)} · ${esc(s.method)}</small></p>
+    ${s.items.map(i => `<div class="row" style="cursor:default"><div class="grow"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)}</small></div><div class="amt">${money(i.qty * i.price)}</div></div>`).join('')}
+    <div class="total"><span>Total</span><b>${money(s.total)}</b></div>`, null, null,
+    {danger:{label:'Anular venta y devolver stock', fn:() => ask('La venta se eliminará y los productos volverán al inventario.', () => {
+      s.items.forEach(i => { const p = db.products.find(x => x.id === i.id); if(p) p.stock += i.qty; });
+      db.sales = db.sales.filter(x => x.id !== s.id); save(); toast('Venta anulada'); render();
+    }, 'Anular venta')}});
+}
+
+/* ---------- Inicio ---------- */
+(function init(){
+  const sid = S.get('mc_session');
+  const u = sid && users().find(x => x.id === sid);
+  if(u) startSession(u); else render();
+})();
+</script>
+</body>
+</html>
